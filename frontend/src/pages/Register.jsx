@@ -225,16 +225,21 @@ const Register = () => {
 
             <div className="form-group">
               <label className="form-label" htmlFor="community">Community</label>
-              <input
-                className="form-control"
-                type="text"
+              <select
+                className="form-control form-select"
                 id="community"
                 name="community"
-                placeholder="e.g. BC / MBC / SC / ST / OC"
                 value={formData.community}
                 onChange={handleChange}
                 required
-              />
+              >
+                <option value="">-- Select Community --</option>
+                <option value="OC">OC (Open Competition)</option>
+                <option value="BC">BC (Backward Class)</option>
+                <option value="MBC">MBC (Most Backward Class)</option>
+                <option value="SC">SC (Scheduled Caste)</option>
+                <option value="ST">ST (Scheduled Tribe)</option>
+              </select>
             </div>
 
             <div className="form-group">

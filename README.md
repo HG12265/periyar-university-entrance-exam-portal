@@ -77,3 +77,42 @@ To access the administrative panel directly, navigate to `http://localhost:5173/
 - **Frontend Environmental Exposure**: Frontend parameters (prefixed with `VITE_`) are compiled into public browser assets and visible to anyone inspecting the client code. **Do not** write database credentials, admin credentials, JWT secrets, or private configurations in `frontend/.env`.
 - **Change Default Admin Credentials**: Always change the default seeding username/password (`ADMIN_USERNAME` and `ADMIN_PASSWORD`) to strong, unique values before running or deploying in production or staging environments.
 
+---
+
+## 🐳 Running via Docker Compose
+
+You can containerize the database, backend, and frontend services using Docker Compose.
+
+### 1. Configure the Environment
+Copy the root environment template to `.env`:
+```bash
+copy .env.example .env
+```
+Open `.env` in the root directory and specify your custom root database password, user passwords, administrative seed credentials, and JWT encryption keys.
+
+### 2. Start all Containers
+Build the images and run the services:
+```bash
+docker compose up --build
+```
+This command spins up:
+- **Database (db)**: MySQL 8.0 mapped to port `3306`.
+- **Backend (FastAPI)**: Server running on port `8000`.
+- **Frontend (Nginx / React)**: App accessible at `http://localhost:8080`.
+
+### 3. Service Access Endpoints
+- **Student Exam Portal**: `http://localhost:8080/`
+- **Admin Dashboard**: `http://localhost:8080/admin/login`
+- **FastAPI API Swagger Docs**: `http://localhost:8000/docs`
+
+### 4. Tear Down & Database Reset
+- **Stop services**:
+  ```bash
+  docker compose down
+  ```
+- **Reset database volumes** (wipes all student and attempts records for a fresh install):
+  ```bash
+  docker compose down -v
+  ```
+
+
