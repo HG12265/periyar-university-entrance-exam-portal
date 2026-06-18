@@ -313,6 +313,24 @@ body {
   padding: 2rem;
 }
 
+/* Scoped centered-container heights for pages rendering the new UniversityHeader */
+.has-univ-header .centered-container {
+  min-height: calc(100vh - 163px);
+}
+
+@media (max-width: 992px) {
+  .has-univ-header .centered-container {
+    min-height: calc(100vh - 120px);
+  }
+}
+
+@media (max-width: 768px) {
+  .has-univ-header .centered-container {
+    min-height: auto;
+    padding: 1.5rem 1rem;
+  }
+}
+
 .register-card {
   width: 100%;
   max-width: 550px;
@@ -379,7 +397,7 @@ body {
   padding: 2rem;
   max-width: 1400px;
   margin: 0 auto;
-  min-height: calc(100vh - 76px);
+  min-height: 100vh;
 }
 
 @media (max-width: 968px) {
