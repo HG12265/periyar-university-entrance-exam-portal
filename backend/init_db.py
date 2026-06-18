@@ -1,4 +1,5 @@
 import pymysql
+from app.config import settings
 from app.database import engine, Base, SessionLocal
 from app.models import Admin
 from app.auth import get_password_hash
@@ -13,23 +14,19 @@ def init_database():
         # Seed default admin credentials
         db = SessionLocal()
         try:
-            admin_exists = db.query(Admin).filter(Admin.username == "admin").first()
+            admin_exists = db.query(Admin).filter(Admin.username == settings.ADMIN_USERNAME).first()
             if not admin_exists:
-                hashed_pw = get_password_hash("admin123")
+                hashed_pw = get_password_hash(settings.ADMIN_PASSWORD)
                 default_admin = Admin(
-                    username="admin",
+                    username=settings.ADMIN_USERNAME,
                     password_hash=hashed_pw,
                     name="Periyar Admin"
                 )
                 db.add(default_admin)
                 db.commit()
-                print("=========================================")
-                print("Default admin credentials seeded:")
-                print("Username: admin")
-                print("Password: admin123")
-                print("=========================================")
+                print("Admin account seeded successfully from environment variables.")
             else:
-                print("Admin account 'admin' already exists.")
+                print(f"Admin account '{settings.ADMIN_USERNAME}' already exists.")
         except Exception as e:
             print(f"Error seeding admin account: {e}")
         finally:

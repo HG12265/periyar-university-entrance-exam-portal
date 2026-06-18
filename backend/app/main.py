@@ -1,6 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.config import settings
 from app.database import Base, engine, SessionLocal
 from app.models import Admin
 from app.auth import get_password_hash
@@ -13,17 +14,17 @@ Base.metadata.create_all(bind=engine)
 def seed_admin():
     db = SessionLocal()
     try:
-        admin_exists = db.query(Admin).filter(Admin.username == "admin").first()
+        admin_exists = db.query(Admin).filter(Admin.username == settings.ADMIN_USERNAME).first()
         if not admin_exists:
-            hashed_pw = get_password_hash("admin123")
+            hashed_pw = get_password_hash(settings.ADMIN_PASSWORD)
             default_admin = Admin(
-                username="admin",
+                username=settings.ADMIN_USERNAME,
                 password_hash=hashed_pw,
                 name="Periyar Admin"
             )
             db.add(default_admin)
             db.commit()
-            print("Default admin seeded successfully (admin / admin123).")
+            print("Admin account seeded successfully from environment variables.")
     except Exception as e:
         print(f"Error seeding admin: {e}")
     finally:
@@ -32,7 +33,7 @@ def seed_admin():
 seed_admin()
 
 app = FastAPI(
-    title="Periyar University Entrance Examination Portal API",
+    title=settings.APP_NAME,
     description="Backend services for student registration, exam taking, evaluation, leaderboard, and admin dashboard.",
     version="1.0.0"
 )
@@ -40,7 +41,7 @@ app = FastAPI(
 # Enable CORS for frontend integration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust in production
+    allow_origins=settings.BACKEND_CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
