@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, Integer, String, Float, Text, Boolean, DateTime, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, Integer, String, Float, Text, Boolean, DateTime, Date, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -18,9 +18,10 @@ class Student(Base):
     application_number = Column(String(50), unique=True, index=True, nullable=False)
     name = Column(String(150), nullable=False)
     community = Column(String(100), nullable=False)
-    email = Column(String(150), nullable=False)
+    email = Column(String(150), unique=True, nullable=False)
     mobile = Column(String(20), nullable=False)
     ug_percentage = Column(Float, nullable=False)
+    date_of_birth = Column(Date, nullable=False)
     registered_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     # Relationships

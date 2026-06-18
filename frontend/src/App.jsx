@@ -22,9 +22,6 @@ function App() {
           </div>
           <div className="nav-links">
             <Link to="/" className="nav-link">Portal Home</Link>
-            <Link to="/admin/dashboard" className="nav-btn-secondary" style={{ textDecoration: "none", fontSize: "0.85rem", padding: "0.5rem 1rem" }}>
-              Admin Panel
-            </Link>
           </div>
         </nav>
 

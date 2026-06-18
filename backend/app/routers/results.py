@@ -71,7 +71,37 @@ def get_globally_ranked_attempts(
         
     if community_filter and community_filter != "All":
         target_comm = community_filter.lower()
-        filtered_list = [item for item in filtered_list if item["community"].lower() == target_comm]
+        if target_comm == "oc":
+            filtered_list = [
+                item for item in filtered_list
+                if item["community"].lower() in ["oc", "open category", "open", "general", "unreserved", "ur"]
+                or item["community"].lower().startswith("oc")
+            ]
+        elif target_comm == "bc":
+            filtered_list = [
+                item for item in filtered_list
+                if item["community"].lower().startswith("bc") or item["community"].lower().startswith("obc")
+            ]
+        elif target_comm == "mbc":
+            filtered_list = [
+                item for item in filtered_list
+                if item["community"].lower().startswith("mbc") or item["community"].lower().startswith("dnc")
+            ]
+        elif target_comm == "sc":
+            filtered_list = [
+                item for item in filtered_list
+                if item["community"].lower().startswith("sc")
+            ]
+        elif target_comm == "st":
+            filtered_list = [
+                item for item in filtered_list
+                if item["community"].lower().startswith("st")
+            ]
+        else:
+            filtered_list = [
+                item for item in filtered_list
+                if target_comm in item["community"].lower()
+            ]
         
     if search:
         search = search.lower()

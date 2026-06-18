@@ -7,6 +7,7 @@ const Register = () => {
   const [formData, setFormData] = useState({
     application_number: "",
     name: "",
+    date_of_birth: "",
     community: "",
     email: "",
     mobile: "",
@@ -60,6 +61,12 @@ const Register = () => {
 
     if (selectedDegrees.length === 0) {
       setError("Please select at least one degree program.");
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.date_of_birth) {
+      setError("Please select your Date of Birth.");
       setLoading(false);
       return;
     }
@@ -158,6 +165,20 @@ const Register = () => {
                 placeholder="Enter your full name"
                 value={formData.name}
                 onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="date_of_birth">Date of Birth</label>
+              <input
+                className="form-control"
+                type="date"
+                id="date_of_birth"
+                name="date_of_birth"
+                value={formData.date_of_birth}
+                onChange={handleChange}
+                max={new Date().toISOString().split("T")[0]}
                 required
               />
             </div>

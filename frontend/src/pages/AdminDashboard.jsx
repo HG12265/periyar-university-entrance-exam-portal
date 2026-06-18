@@ -58,6 +58,7 @@ const AdminDashboard = () => {
   const [results, setResults] = useState([]);
   const [resultsSearch, setResultsSearch] = useState("");
   const [resultsDegree, setResultsDegree] = useState("All");
+  const [resultsCommunity, setResultsCommunity] = useState("All");
 
   // Leaderboard states (Rank list)
   const [leaderboard, setLeaderboard] = useState([]);
@@ -265,6 +266,7 @@ const AdminDashboard = () => {
       const params = {};
       if (resultsSearch.trim()) params.search = resultsSearch;
       if (resultsDegree !== "All") params.degree = resultsDegree;
+      if (resultsCommunity !== "All") params.community = resultsCommunity;
 
       const res = await api.get("/api/v1/results", { params });
       setResults(res.data);
@@ -336,7 +338,7 @@ const AdminDashboard = () => {
       }, 300);
       return () => clearTimeout(delayDebounce);
     }
-  }, [resultsSearch, resultsDegree]);
+  }, [resultsSearch, resultsDegree, resultsCommunity]);
 
   // Handle leaderboard search and filtering trigger
   useEffect(() => {
@@ -673,7 +675,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Filter and Search Bar */}
-                <div className="filters-bar">
+                <div className="filters-bar" style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr", gap: "1rem" }}>
                   <div className="search-input-container">
                     <Search size={16} className="search-icon" />
                     <input
@@ -694,6 +696,18 @@ const AdminDashboard = () => {
                     <option value="MCA">MCA</option>
                     <option value="MSC_CS">M.Sc Computer Science</option>
                     <option value="MSC_DS">M.Sc Data Science</option>
+                  </select>
+
+                  <select
+                    className="form-control filter-select"
+                    value={resultsCommunity}
+                    onChange={(e) => setResultsCommunity(e.target.value)}
+                  >
+                    <option value="All">All Communities</option>
+                    <option value="BC">BC</option>
+                    <option value="MBC">MBC</option>
+                    <option value="SC">SC</option>
+                    <option value="ST">ST</option>
                   </select>
                 </div>
 
@@ -791,7 +805,6 @@ const AdminDashboard = () => {
                     <option value="MBC">MBC</option>
                     <option value="SC">SC</option>
                     <option value="ST">ST</option>
-                    <option value="OC">OC</option>
                   </select>
                 </div>
 

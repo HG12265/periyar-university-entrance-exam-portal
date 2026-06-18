@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, date
 
 # Token Schemas
 class Token(BaseModel):
@@ -31,6 +31,7 @@ class StudentBase(BaseModel):
     email: EmailStr
     mobile: str
     ug_percentage: float = Field(..., ge=0, le=100)
+    date_of_birth: date
 
 class StudentCreate(StudentBase):
     degrees: List[str]  # e.g., ["MCA", "MSC_CS"]
