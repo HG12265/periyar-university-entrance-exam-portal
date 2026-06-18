@@ -333,7 +333,21 @@ body {
 
 .register-card {
   width: 100%;
-  max-width: 550px;
+  max-width: 800px;
+}
+
+.registration-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .registration-form-grid {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2rem;
+    row-gap: 1.25rem;
+  }
 }
 
 /* Alert States */

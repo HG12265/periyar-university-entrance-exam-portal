@@ -101,11 +101,33 @@ This command spins up:
 - **Frontend (Nginx / React)**: App accessible at `http://localhost:8080`.
 
 ### 3. Service Access Endpoints
-- **Student Exam Portal**: `http://localhost:8080/`
-- **Admin Dashboard**: `http://localhost:8080/admin/login`
+- **Student Exam Portal**: `https://localhost:8443/` (or HTTP redirect at `http://localhost:8080/`)
+- **Admin Dashboard**: `https://localhost:8443/admin/login`
 - **FastAPI API Swagger Docs**: `http://localhost:8000/docs`
 
-### 4. Tear Down & Database Reset
+### 4. HTTPS and SSL Certificate Setup
+To serve the portal securely over HTTPS (`https://localhost:8443`), you must generate SSL certificate keys. 
+
+For **local testing and demonstration**, you can generate a self-signed SSL certificate key pair:
+- **Git Bash / Terminal / PowerShell command**:
+  ```bash
+  openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/certs/server.key -out nginx/certs/server.crt -subj "/CN=localhost" -addext "subjectAltName=DNS:localhost,IP:127.0.0.1"
+  ```
+- Make sure to run this command from the root workspace folder to place files inside `nginx/certs/`.
+- Nginx is configured to redirect HTTP (`http://localhost:8080`) to HTTPS (`https://localhost:8443`) automatically. Accept the self-signed certificate warning in your browser to proceed to the portal.
+
+> [!WARNING]
+> Self-signed certificates are only for local development testing. Production environments must replace `server.crt` and `server.key` inside `nginx/certs/` with official certificates from a trusted Certificate Authority (e.g. Let's Encrypt / Certbot).
+
+### 5. Production Rate Limiting Notice
+The API limits automated requests:
+- **Student Registration**: 10 requests per minute.
+- **Admin Login**: 5 requests per minute.
+
+> [!NOTE]
+> SlowAPI's default in-memory rate limiter is suitable for local/demo usage. For real production environments running multiple workers or container replicas, configure a Redis-backed rate limit storage backend inside `app/limiter.py` to maintain consistent rate-limiting across instances.
+
+### 6. Tear Down & Database Reset
 - **Stop services**:
   ```bash
   docker compose down

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -7,11 +7,13 @@ from app.database import get_db
 from app.models import Admin, Student, StudentDegree, Exam, Question, ExamAttempt
 from app.schemas import AdminResponse, Token
 from app.auth import create_access_token, get_current_admin, verify_password, get_password_hash
+from app.limiter import limiter
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Admin Auth"])
 
 @router.post("/login", response_model=Token)
-def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def login_for_access_token(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     admin = db.query(Admin).filter(Admin.username == form_data.username).first()
     if not admin or not verify_password(form_data.password, admin.password_hash):
         raise HTTPException(

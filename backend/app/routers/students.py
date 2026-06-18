@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from typing import List
 from app.database import get_db
 from app.models import Student, StudentDegree, ExamAttempt, Admin
 from app.schemas import StudentCreate, StudentResponse
 from app.auth import get_current_admin
+from app.limiter import limiter
 
 router = APIRouter(prefix="/api/v1/students", tags=["Students"])
 
@@ -26,7 +27,8 @@ def _student_dict(s: Student) -> dict:
 
 
 @router.post("/register")
-def register_student(student_data: StudentCreate, db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def register_student(request: Request, student_data: StudentCreate, db: Session = Depends(get_db)):
     # ── Check Application Number uniqueness ──────────────────────────────────
     existing_by_appno = db.query(Student).filter(
         Student.application_number == student_data.application_number

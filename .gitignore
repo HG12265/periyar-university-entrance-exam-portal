@@ -74,3 +74,9 @@ yarn-error.log*
 *.swp
 .DS_Store
 Thumbs.db
+
+# SSL Certificates
+nginx/certs/*.key
+nginx/certs/*.crt
+nginx/certs/*.pem
+!nginx/certs/.gitkeep

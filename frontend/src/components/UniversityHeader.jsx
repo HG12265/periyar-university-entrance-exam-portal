@@ -31,11 +31,8 @@ const UniversityHeader = () => {
           </div>
         </div>
       </div>
-      
+
       <div className="header-right">
-        <div className="badge-container">
-          <span className="payment-badge">ONLINE PAYMENT PORTAL</span>
-        </div>
         <div className="portrait-wrap">
           <img
             src="/assets/periyar-portrait.png"

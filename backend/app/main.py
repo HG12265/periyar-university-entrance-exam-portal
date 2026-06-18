@@ -6,6 +6,10 @@ from app.database import Base, engine, SessionLocal
 from app.models import Admin
 from app.auth import get_password_hash
 from app.routers import admin, students, exams, questions, results
+from slowapi.middleware import SlowAPIMiddleware
+from slowapi.errors import RateLimitExceeded
+from slowapi import _rate_limit_exceeded_handler
+from app.limiter import limiter
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -37,6 +41,10 @@ app = FastAPI(
     description="Backend services for student registration, exam taking, evaluation, leaderboard, and admin dashboard.",
     version="1.0.0"
 )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 
 # Enable CORS for frontend integration
 app.add_middleware(

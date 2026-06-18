@@ -121,7 +121,7 @@ const Register = () => {
 
   return (
     <div className="centered-container">
-      <div className="glass-card register-card animate-slide-up" style={{ maxWidth: "550px" }}>
+      <div className="glass-card register-card animate-slide-up">
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <h2 style={{ fontSize: "1.8rem", color: "var(--primary)", fontWeight: "800", marginBottom: "0.25rem" }}>
             Student Registration
@@ -141,122 +141,122 @@ const Register = () => {
 
         {examActive && (
           <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label" htmlFor="application_number">Application Number</label>
-              <input
-                className="form-control"
-                type="text"
-                id="application_number"
-                name="application_number"
-                placeholder="e.g. PU202610234"
-                value={formData.application_number}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label" htmlFor="name">Student Name</label>
-              <input
-                className="form-control"
-                type="text"
-                id="name"
-                name="name"
-                placeholder="Enter your full name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label" htmlFor="date_of_birth">Date of Birth</label>
-              <input
-                className="form-control"
-                type="date"
-                id="date_of_birth"
-                name="date_of_birth"
-                value={formData.date_of_birth}
-                onChange={handleChange}
-                max={new Date().toISOString().split("T")[0]}
-                required
-              />
-            </div>
-
-            {/* Checkbox Group for degrees */}
-            <div className="form-group">
-              <label className="form-label" style={{ marginBottom: "0.5rem", display: "block" }}>
-                Degree(s) Applied (Multi-select)
-              </label>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", padding: "0.5rem 0" }}>
-                {[
-                  { value: "MCA", label: "MCA" },
-                  { value: "MSC_CS", label: "M.Sc Computer Science" },
-                  { value: "MSC_DS", label: "M.Sc Data Science" },
-                ].map((deg) => (
-                  <label
-                    key={deg.value}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.75rem",
-                      cursor: "pointer",
-                      fontSize: "0.95rem",
-                      fontWeight: "500",
-                      color: "var(--text-main)"
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedDegrees.includes(deg.value)}
-                      onChange={() => handleDegreeChange(deg.value)}
-                      style={{
-                        width: "18px",
-                        height: "18px",
-                        accentColor: "var(--primary)",
-                        cursor: "pointer"
-                      }}
-                    />
-                    {deg.label}
-                  </label>
-                ))}
+            <div className="registration-form-grid">
+              <div className="form-group">
+                <label className="form-label" htmlFor="application_number">Application Number</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  id="application_number"
+                  name="application_number"
+                  placeholder="e.g. PU202610234"
+                  value={formData.application_number}
+                  onChange={handleChange}
+                  required
+                />
               </div>
-            </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="community">Community</label>
-              <select
-                className="form-control form-select"
-                id="community"
-                name="community"
-                value={formData.community}
-                onChange={handleChange}
-                required
-              >
-                <option value="">-- Select Community --</option>
-                <option value="OC">OC (Open Competition)</option>
-                <option value="BC">BC (Backward Class)</option>
-                <option value="MBC">MBC (Most Backward Class)</option>
-                <option value="SC">SC (Scheduled Caste)</option>
-                <option value="ST">ST (Scheduled Tribe)</option>
-              </select>
-            </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="name">Student Name</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="Enter your full name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="email">Email Address</label>
-              <input
-                className="form-control"
-                type="email"
-                id="email"
-                name="email"
-                placeholder="name@example.com"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="date_of_birth">Date of Birth</label>
+                <input
+                  className="form-control"
+                  type="date"
+                  id="date_of_birth"
+                  name="date_of_birth"
+                  value={formData.date_of_birth}
+                  onChange={handleChange}
+                  max={new Date().toISOString().split("T")[0]}
+                  required
+                />
+              </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1rem" }}>
+              <div className="form-group">
+                <label className="form-label" htmlFor="community">Community</label>
+                <select
+                  className="form-control form-select"
+                  id="community"
+                  name="community"
+                  value={formData.community}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">-- Select Community --</option>
+                  <option value="OC">OC (Open Competition)</option>
+                  <option value="BC">BC (Backward Class)</option>
+                  <option value="MBC">MBC (Most Backward Class)</option>
+                  <option value="SC">SC (Scheduled Caste)</option>
+                  <option value="ST">ST (Scheduled Tribe)</option>
+                </select>
+              </div>
+
+              {/* Checkbox Group for degrees */}
+              <div className="form-group">
+                <label className="form-label" style={{ marginBottom: "0.5rem", display: "block" }}>
+                  Degree(s) Applied (Multi-select)
+                </label>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", padding: "0.5rem 0" }}>
+                  {[
+                    { value: "MCA", label: "MCA" },
+                    { value: "MSC_CS", label: "M.Sc Computer Science" },
+                    { value: "MSC_DS", label: "M.Sc Data Science" },
+                  ].map((deg) => (
+                    <label
+                      key={deg.value}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.75rem",
+                        cursor: "pointer",
+                        fontSize: "0.95rem",
+                        fontWeight: "500",
+                        color: "var(--text-main)"
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedDegrees.includes(deg.value)}
+                        onChange={() => handleDegreeChange(deg.value)}
+                        style={{
+                          width: "18px",
+                          height: "18px",
+                          accentColor: "var(--primary)",
+                          cursor: "pointer"
+                        }}
+                      />
+                      {deg.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="email">Email Address</label>
+                <input
+                  className="form-control"
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="name@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
               <div className="form-group">
                 <label className="form-label" htmlFor="mobile">Mobile Number</label>
                 <input
@@ -293,7 +293,7 @@ const Register = () => {
               className="btn btn-primary animate-pulse"
               type="submit"
               disabled={loading}
-              style={{ marginTop: "1rem" }}
+              style={{ marginTop: "1.5rem" }}
             >
               {loading ? "Registering..." : "Start Exam"}
             </button>
