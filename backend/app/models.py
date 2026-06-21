@@ -64,6 +64,11 @@ class Question(Base):
     option_d = Column(String(255), nullable=False)
     correct_option = Column(String(10), nullable=False)  # A, B, C, D
     marks = Column(Float, default=1.0)
+    image_url = Column(String(500), nullable=True)
+    option_a_image_url = Column(String(500), nullable=True)
+    option_b_image_url = Column(String(500), nullable=True)
+    option_c_image_url = Column(String(500), nullable=True)
+    option_d_image_url = Column(String(500), nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     exam = relationship("Exam", back_populates="questions")

@@ -414,6 +414,15 @@ body {
   min-height: 100vh;
 }
 
+@media (min-width: 969px) {
+  .exam-layout {
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+}
+
 @media (max-width: 968px) {
   .exam-layout {
     grid-template-columns: 1fr;
@@ -428,6 +437,13 @@ body {
   padding: 2rem;
   display: flex;
   flex-direction: column;
+}
+
+@media (min-width: 969px) {
+  .question-panel {
+    height: 100%;
+    overflow-y: auto;
+  }
 }
 
 .question-header {
@@ -532,6 +548,14 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+@media (min-width: 969px) {
+  .exam-sidebar {
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+  }
 }
 
 .timer-box {
@@ -1108,9 +1132,10 @@ body {
   100% { transform: translateX(0); }
 }
 
-/* Prevent scrollbar from showing during fullscreen exam */
+/* Allow vertical scrollbar during fullscreen exam if content overflows */
 :fullscreen body,
 :-webkit-full-screen body,
 :-moz-full-screen body {
-  overflow: hidden;
+  overflow-y: auto;
 }
+

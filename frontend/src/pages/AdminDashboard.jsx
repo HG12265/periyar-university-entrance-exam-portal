@@ -39,7 +39,12 @@ const AdminDashboard = () => {
     option_c: "",
     option_d: "",
     correct_option: "A",
-    marks: 1.0
+    marks: 1.0,
+    image_url: "",
+    option_a_image_url: "",
+    option_b_image_url: "",
+    option_c_image_url: "",
+    option_d_image_url: ""
   });
   const [uploadFile, setUploadFile] = useState(null);
   const [uploadResult, setUploadResult] = useState(null);
@@ -147,7 +152,12 @@ const AdminDashboard = () => {
       option_c: "",
       option_d: "",
       correct_option: "A",
-      marks: 1.0
+      marks: 1.0,
+      image_url: "",
+      option_a_image_url: "",
+      option_b_image_url: "",
+      option_c_image_url: "",
+      option_d_image_url: ""
     });
     setQuestionModal({ show: true, editId: null });
   };
@@ -160,9 +170,36 @@ const AdminDashboard = () => {
       option_c: q.option_c,
       option_d: q.option_d,
       correct_option: q.correct_option,
-      marks: q.marks
+      marks: q.marks,
+      image_url: q.image_url || "",
+      option_a_image_url: q.option_a_image_url || "",
+      option_b_image_url: q.option_b_image_url || "",
+      option_c_image_url: q.option_c_image_url || "",
+      option_d_image_url: q.option_d_image_url || ""
     });
     setQuestionModal({ show: true, editId: q.id });
+  };
+
+  const handleImageUpload = async (file, field) => {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    setActionLoading(true);
+    try {
+      const res = await api.post("/api/v1/questions/upload-image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+      setQuestionForm(prev => ({
+        ...prev,
+        [field]: res.data.url
+      }));
+    } catch (err) {
+      alert("Failed to upload image: " + (err.response?.data?.detail || err.message));
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleSaveQuestion = async (e) => {
@@ -633,12 +670,39 @@ const AdminDashboard = () => {
                       {questions.map((q) => (
                         <tr key={q.id}>
                           <td>{q.id}</td>
-                          <td style={{ fontWeight: "500", verticalAlign: "top" }}>{q.question_text}</td>
-                          <td style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                            <div>A: {q.option_a}</div>
-                            <div>B: {q.option_b}</div>
-                            <div>C: {q.option_c}</div>
-                            <div>D: {q.option_d}</div>
+                          <td style={{ fontWeight: "500", verticalAlign: "top" }}>
+                            <div>{q.question_text}</div>
+                            {q.image_url && (
+                              <div style={{ marginTop: "0.5rem" }}>
+                                <img 
+                                  src={q.image_url} 
+                                  alt="Question diagram" 
+                                  style={{ maxWidth: "150px", maxHeight: "80px", borderRadius: "4px", border: "1px solid var(--border)" }} 
+                                />
+                              </div>
+                            )}
+                          </td>
+                          <td style={{ fontSize: "0.85rem", color: "var(--text-secondary)", verticalAlign: "top" }}>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                              {[
+                                { label: "A", val: q.option_a, img: q.option_a_image_url },
+                                { label: "B", val: q.option_b, img: q.option_b_image_url },
+                                { label: "C", val: q.option_c, img: q.option_c_image_url },
+                                { label: "D", val: q.option_d, img: q.option_d_image_url },
+                              ].map((opt) => (
+                                <div key={opt.label} style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+                                  <span style={{ fontWeight: "600" }}>{opt.label}:</span>
+                                  {opt.val && <span>{opt.val}</span>}
+                                  {opt.img && (
+                                    <img 
+                                      src={opt.img} 
+                                      alt={`Opt ${opt.label}`} 
+                                      style={{ height: "28px", objectFit: "contain", borderRadius: "2px", border: "1px solid var(--border)" }} 
+                                    />
+                                  )}
+                                </div>
+                              ))}
+                            </div>
                           </td>
                           <td><span className="badge badge-blue">{q.correct_option}</span></td>
                           <td style={{ textAlign: "right", fontWeight: "600" }}>{q.marks}</td>
@@ -721,7 +785,9 @@ const AdminDashboard = () => {
                         <th style={{ textAlign: "right" }}>Correct</th>
                         <th style={{ textAlign: "right" }}>Wrong</th>
                         <th style={{ textAlign: "right" }}>Score</th>
-                        <th style={{ textAlign: "right" }}>Percentage</th>
+                        <th style={{ textAlign: "right" }}>UG %</th>
+                        <th style={{ textAlign: "right" }}>Exam %</th>
+                        <th style={{ textAlign: "right" }}>Final %</th>
                         <th>Submitted At</th>
                       </tr>
                     </thead>
@@ -742,7 +808,9 @@ const AdminDashboard = () => {
                           <td style={{ textAlign: "right", color: "var(--success)" }}>{r.correct_answers}</td>
                           <td style={{ textAlign: "right", color: "var(--danger)" }}>{r.wrong_answers}</td>
                           <td style={{ textAlign: "right", fontWeight: "700" }}>{r.score}</td>
-                          <td style={{ textAlign: "right", fontWeight: "600" }}>{r.percentage}%</td>
+                          <td style={{ textAlign: "right" }}>{r.ug_percentage}%</td>
+                          <td style={{ textAlign: "right" }}>{r.entrance_percentage}%</td>
+                          <td style={{ textAlign: "right", fontWeight: "700", color: "var(--primary)" }}>{r.final_percentage}%</td>
                           <td style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
                             {r.submitted_at ? new Date(r.submitted_at).toLocaleString() : ""}
                           </td>
@@ -750,7 +818,7 @@ const AdminDashboard = () => {
                       ))}
                       {results.length === 0 && (
                         <tr>
-                          <td colSpan="8" style={{ textAlign: "center", color: "var(--text-muted)" }}>
+                          <td colSpan="10" style={{ textAlign: "center", color: "var(--text-muted)" }}>
                             No results found matching search filters.
                           </td>
                         </tr>
@@ -817,8 +885,9 @@ const AdminDashboard = () => {
                         <th>Student Name</th>
                         <th>Degrees Applied</th>
                         <th>Community</th>
-                        <th style={{ textAlign: "right" }}>Marks Obtained</th>
-                        <th style={{ textAlign: "right" }}>Percentage</th>
+                        <th style={{ textAlign: "right" }}>UG %</th>
+                        <th style={{ textAlign: "right" }}>Exam %</th>
+                        <th style={{ textAlign: "right" }}>Final %</th>
                         <th>Submitted At</th>
                       </tr>
                     </thead>
@@ -848,8 +917,9 @@ const AdminDashboard = () => {
                               </div>
                             </td>
                             <td><span className="badge badge-gray">{r.community}</span></td>
-                            <td style={{ textAlign: "right", fontWeight: "700" }}>{r.marks}</td>
-                            <td style={{ textAlign: "right", fontWeight: "600", color: "var(--text-muted)" }}>{r.percentage}%</td>
+                            <td style={{ textAlign: "right" }}>{r.ug_percentage}%</td>
+                            <td style={{ textAlign: "right" }}>{r.entrance_percentage}%</td>
+                            <td style={{ textAlign: "right", fontWeight: "700", color: "var(--primary)" }}>{r.final_percentage}%</td>
                             <td style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
                               {r.submitted_at ? new Date(r.submitted_at).toLocaleString() : ""}
                             </td>
@@ -858,7 +928,7 @@ const AdminDashboard = () => {
                       })}
                       {leaderboard.length === 0 && (
                         <tr>
-                          <td colSpan="8" style={{ textAlign: "center", color: "var(--text-muted)" }}>
+                          <td colSpan="9" style={{ textAlign: "center", color: "var(--text-muted)" }}>
                             No entries found matching filters.
                           </td>
                         </tr>
@@ -996,8 +1066,38 @@ const AdminDashboard = () => {
                   ></textarea>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                  <div className="form-group">
+                <div className="form-group" style={{ marginBottom: "1.5rem" }}>
+                  <label className="form-label">Question Image / Diagram (Optional)</label>
+                  <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(e.target.files[0], "image_url")}
+                      className="form-control"
+                      style={{ flexGrow: "1" }}
+                    />
+                    {questionForm.image_url && (
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <img
+                          src={questionForm.image_url}
+                          alt="Preview"
+                          style={{ height: "40px", objectFit: "contain", borderRadius: "4px", border: "1px solid var(--border)" }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setQuestionForm({ ...questionForm, image_url: "" })}
+                          className="btn btn-secondary"
+                          style={{ width: "auto", padding: "0.25rem 0.5rem", fontSize: "0.8rem", color: "var(--danger)" }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", marginBottom: "1rem" }}>
+                  <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <label className="form-label">Option A</label>
                     <input
                       className="form-control"
@@ -1006,9 +1106,37 @@ const AdminDashboard = () => {
                       onChange={(e) => setQuestionForm({ ...questionForm, option_a: e.target.value })}
                       required
                     />
+                    <label style={{ fontSize: "0.85rem", fontWeight: "500", color: "var(--text-muted)", marginTop: "0.25rem" }}>Option A Image (Optional)</label>
+                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e.target.files[0], "option_a_image_url")}
+                        className="form-control"
+                        style={{ padding: "0.35rem 0.5rem", fontSize: "0.85rem", flexGrow: "1" }}
+                      />
+                      {questionForm.option_a_image_url && (
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                          <img
+                            src={questionForm.option_a_image_url}
+                            alt="Preview A"
+                            style={{ height: "30px", objectFit: "contain", borderRadius: "2px", border: "1px solid var(--border)" }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setQuestionForm({ ...questionForm, option_a_image_url: "" })}
+                            className="action-btn delete"
+                            style={{ padding: "0.2rem" }}
+                            title="Remove Image"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="form-group">
+                  <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <label className="form-label">Option B</label>
                     <input
                       className="form-control"
@@ -1017,11 +1145,39 @@ const AdminDashboard = () => {
                       onChange={(e) => setQuestionForm({ ...questionForm, option_b: e.target.value })}
                       required
                     />
+                    <label style={{ fontSize: "0.85rem", fontWeight: "500", color: "var(--text-muted)", marginTop: "0.25rem" }}>Option B Image (Optional)</label>
+                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e.target.files[0], "option_b_image_url")}
+                        className="form-control"
+                        style={{ padding: "0.35rem 0.5rem", fontSize: "0.85rem", flexGrow: "1" }}
+                      />
+                      {questionForm.option_b_image_url && (
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                          <img
+                            src={questionForm.option_b_image_url}
+                            alt="Preview B"
+                            style={{ height: "30px", objectFit: "contain", borderRadius: "2px", border: "1px solid var(--border)" }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setQuestionForm({ ...questionForm, option_b_image_url: "" })}
+                            className="action-btn delete"
+                            style={{ padding: "0.2rem" }}
+                            title="Remove Image"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                  <div className="form-group">
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", marginBottom: "1rem" }}>
+                  <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <label className="form-label">Option C</label>
                     <input
                       className="form-control"
@@ -1030,9 +1186,37 @@ const AdminDashboard = () => {
                       onChange={(e) => setQuestionForm({ ...questionForm, option_c: e.target.value })}
                       required
                     />
+                    <label style={{ fontSize: "0.85rem", fontWeight: "500", color: "var(--text-muted)", marginTop: "0.25rem" }}>Option C Image (Optional)</label>
+                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e.target.files[0], "option_c_image_url")}
+                        className="form-control"
+                        style={{ padding: "0.35rem 0.5rem", fontSize: "0.85rem", flexGrow: "1" }}
+                      />
+                      {questionForm.option_c_image_url && (
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                          <img
+                            src={questionForm.option_c_image_url}
+                            alt="Preview C"
+                            style={{ height: "30px", objectFit: "contain", borderRadius: "2px", border: "1px solid var(--border)" }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setQuestionForm({ ...questionForm, option_c_image_url: "" })}
+                            className="action-btn delete"
+                            style={{ padding: "0.2rem" }}
+                            title="Remove Image"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="form-group">
+                  <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <label className="form-label">Option D</label>
                     <input
                       className="form-control"
@@ -1041,6 +1225,34 @@ const AdminDashboard = () => {
                       onChange={(e) => setQuestionForm({ ...questionForm, option_d: e.target.value })}
                       required
                     />
+                    <label style={{ fontSize: "0.85rem", fontWeight: "500", color: "var(--text-muted)", marginTop: "0.25rem" }}>Option D Image (Optional)</label>
+                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e.target.files[0], "option_d_image_url")}
+                        className="form-control"
+                        style={{ padding: "0.35rem 0.5rem", fontSize: "0.85rem", flexGrow: "1" }}
+                      />
+                      {questionForm.option_d_image_url && (
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                          <img
+                            src={questionForm.option_d_image_url}
+                            alt="Preview D"
+                            style={{ height: "30px", objectFit: "contain", borderRadius: "2px", border: "1px solid var(--border)" }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setQuestionForm({ ...questionForm, option_d_image_url: "" })}
+                            className="action-btn delete"
+                            style={{ padding: "0.2rem" }}
+                            title="Remove Image"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 

@@ -444,12 +444,21 @@ const Exam = () => {
         {currentQuestion && (
           <>
             <div className="question-text">{currentQuestion.question_text}</div>
+            {currentQuestion.image_url && (
+              <div className="question-image-container" style={{ margin: "1.5rem 0", textAlign: "center" }}>
+                <img 
+                  src={currentQuestion.image_url} 
+                  alt="Question Diagram" 
+                  style={{ maxWidth: "100%", maxHeight: "350px", objectFit: "contain", borderRadius: "8px", border: "1px solid var(--border)", boxShadow: "0 4px 12px rgba(0,0,0,0.05)", padding: "0.5rem", backgroundColor: "#fff" }} 
+                />
+              </div>
+            )}
             <div className="options-container">
               {[
-                { key: "A", val: currentQuestion.option_a },
-                { key: "B", val: currentQuestion.option_b },
-                { key: "C", val: currentQuestion.option_c },
-                { key: "D", val: currentQuestion.option_d },
+                { key: "A", val: currentQuestion.option_a, img: currentQuestion.option_a_image_url },
+                { key: "B", val: currentQuestion.option_b, img: currentQuestion.option_b_image_url },
+                { key: "C", val: currentQuestion.option_c, img: currentQuestion.option_c_image_url },
+                { key: "D", val: currentQuestion.option_d, img: currentQuestion.option_d_image_url },
               ].map((opt) => {
                 const isSelected = answers[currentQuestion.id] === opt.key;
                 return (
@@ -459,7 +468,18 @@ const Exam = () => {
                     onClick={() => handleSelectOption(currentQuestion.id, opt.key)}
                   >
                     <div className="option-label">{opt.key}</div>
-                    <div className="option-text">{opt.val}</div>
+                    <div className="option-content-wrapper" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%" }}>
+                      {opt.val && <div className="option-text">{opt.val}</div>}
+                      {opt.img && (
+                        <div className="option-image-container" style={{ marginTop: "0.25rem" }}>
+                          <img 
+                            src={opt.img} 
+                            alt={`Option ${opt.key}`} 
+                            style={{ maxWidth: "100%", maxHeight: "150px", objectFit: "contain", borderRadius: "4px", border: "1px solid var(--border)" }} 
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 );
               })}

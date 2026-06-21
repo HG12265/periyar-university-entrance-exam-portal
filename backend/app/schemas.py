@@ -70,6 +70,11 @@ class QuestionBase(BaseModel):
     option_d: str
     correct_option: str = Field(..., pattern="^[A-Da-d]$")
     marks: float = 1.0
+    image_url: Optional[str] = None
+    option_a_image_url: Optional[str] = None
+    option_b_image_url: Optional[str] = None
+    option_c_image_url: Optional[str] = None
+    option_d_image_url: Optional[str] = None
 
 class QuestionCreate(QuestionBase):
     pass
@@ -90,6 +95,11 @@ class QuestionResponseForStudent(BaseModel):
     option_c: str
     option_d: str
     marks: float
+    image_url: Optional[str] = None
+    option_a_image_url: Optional[str] = None
+    option_b_image_url: Optional[str] = None
+    option_c_image_url: Optional[str] = None
+    option_d_image_url: Optional[str] = None
     class Config:
         from_attributes = True
 
@@ -140,6 +150,9 @@ class ExamSubmitResultResponse(BaseModel):
     wrong_answers: int
     score: float
     percentage: float
+    ug_percentage: float
+    entrance_percentage: float
+    final_percentage: float
     result_visibility: bool
 
 # Leaderboard Schemas for Admin Dashboard (Restricted)
@@ -151,4 +164,8 @@ class LeaderboardEntry(BaseModel):
     community: str
     marks: float
     percentage: float
+    ug_percentage: float
+    entrance_percentage: float
+    final_percentage: float
     submitted_at: Optional[datetime] = None
+

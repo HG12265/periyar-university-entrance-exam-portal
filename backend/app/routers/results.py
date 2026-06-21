@@ -26,20 +26,28 @@ def get_globally_ranked_attempts(
     community_filter: Optional[str] = None,
     search: Optional[str] = None
 ):
-    # Fetch all submitted attempts, ordered by score descending
+    # Fetch all submitted attempts
     all_attempts = db.query(ExamAttempt, Student).join(
         Student, ExamAttempt.student_id == Student.id
     ).filter(
         ExamAttempt.is_submitted == True
-    ).order_by(
-        ExamAttempt.score.desc()
     ).all()
     
-    # Calculate global ranks (Standard Competition Ranking)
+    # Calculate final percentages
+    attempts_with_final = []
+    for attempt, student in all_attempts:
+        entrance_perc = attempt.percentage
+        final_perc = round((student.ug_percentage * 0.5) + (entrance_perc * 0.5), 2)
+        attempts_with_final.append((attempt, student, final_perc))
+        
+    # Sort in memory by final_percentage descending, then by entrance exam percentage descending
+    attempts_with_final.sort(key=lambda x: (x[2], x[0].percentage), reverse=True)
+    
+    # Calculate global ranks (Standard Competition Ranking based on final_percentage)
     ranked_list = []
     current_rank = 1
-    for idx, (attempt, student) in enumerate(all_attempts):
-        if idx > 0 and attempt.score < all_attempts[idx - 1][0].score:
+    for idx, (attempt, student, final_perc) in enumerate(attempts_with_final):
+        if idx > 0 and final_perc < attempts_with_final[idx - 1][2]:
             current_rank = idx + 1
             
         degrees = [d.degree for d in student.degrees]
@@ -56,6 +64,8 @@ def get_globally_ranked_attempts(
             "ug_percentage": student.ug_percentage,
             "score": attempt.score,
             "percentage": attempt.percentage,
+            "entrance_percentage": attempt.percentage,
+            "final_percentage": final_perc,
             "correct_answers": attempt.correct_answers,
             "wrong_answers": attempt.wrong_answers,
             "total_questions": attempt.total_questions,
@@ -151,6 +161,9 @@ def export_results_excel(
             "Wrong Answers": r["wrong_answers"],
             "Marks Obtained": r["score"],
             "Exam Percentage": r["percentage"],
+            "UG Weight (50%)": round(r["ug_percentage"] * 0.5, 2),
+            "Exam Weight (50%)": round(r["entrance_percentage"] * 0.5, 2),
+            "Final Percentage": r["final_percentage"],
             "Submitted At": r["submitted_at"].strftime("%Y-%m-%d %H:%M:%S") if r["submitted_at"] else ""
         })
         
@@ -195,6 +208,9 @@ def get_leaderboard(
             "community": r["community"],
             "marks": r["score"],
             "percentage": r["percentage"],
+            "ug_percentage": r["ug_percentage"],
+            "entrance_percentage": r["entrance_percentage"],
+            "final_percentage": r["final_percentage"],
             "submitted_at": r["submitted_at"]
         })
         

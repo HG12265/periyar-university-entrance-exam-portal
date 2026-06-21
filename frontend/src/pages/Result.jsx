@@ -70,7 +70,34 @@ const Result = () => {
           <div>
             <div className="score-badge">
               <span className="score-num">{result.score}</span>
-              <span className="score-lbl">Marks Obtained</span>
+              <span className="score-lbl">Exam Marks Obtained</span>
+            </div>
+
+            <div style={{
+              backgroundColor: "#f0fdf4",
+              border: "1px solid #bbf7d0",
+              padding: "1rem",
+              borderRadius: "var(--radius-md)",
+              marginBottom: "1.5rem",
+              textAlign: "left"
+            }}>
+              <h4 style={{ color: "#166534", fontWeight: "700", fontSize: "0.95rem", marginBottom: "0.75rem", borderBottom: "1px solid #dcfce7", paddingBottom: "0.25rem" }}>
+                Final Score Calculation Breakdown (50% UG + 50% Entrance)
+              </h4>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.9rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ color: "var(--text-muted)" }}>UG Percentage (A):</span>
+                  <span style={{ fontWeight: "600" }}>{result.ug_percentage}%</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ color: "var(--text-muted)" }}>Entrance Exam Percentage (B):</span>
+                  <span style={{ fontWeight: "600" }}>{result.entrance_percentage}%</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px dashed #bbf7d0", paddingTop: "0.5rem", marginTop: "0.25rem" }}>
+                  <span style={{ fontWeight: "700", color: "#166534" }}>Weighted Final Score (0.5 * A + 0.5 * B):</span>
+                  <span style={{ fontWeight: "800", color: "#166534", fontSize: "1.1rem" }}>{result.final_percentage}%</span>
+                </div>
+              </div>
             </div>
 
             <div className="results-stats-grid" style={{ gridTemplateColumns: "repeat(5, 1fr)", gap: "0.5rem" }}>
@@ -92,7 +119,7 @@ const Result = () => {
               </div>
               <div className="result-stat-card" style={{ padding: "0.75rem 0.25rem" }}>
                 <div className="result-stat-val" style={{ fontSize: "1.2rem" }}>{result.percentage}%</div>
-                <div className="result-stat-lbl" style={{ fontSize: "0.75rem" }}>Percentage</div>
+                <div className="result-stat-lbl" style={{ fontSize: "0.75rem" }}>Exam %</div>
               </div>
             </div>
           </div>

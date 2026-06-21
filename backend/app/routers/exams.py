@@ -133,7 +133,12 @@ def start_exam(payload: ExamStartRequest, db: Session = Depends(get_db)):
             "option_b": q.option_b,
             "option_c": q.option_c,
             "option_d": q.option_d,
-            "marks": q.marks
+            "marks": q.marks,
+            "image_url": q.image_url,
+            "option_a_image_url": q.option_a_image_url,
+            "option_b_image_url": q.option_b_image_url,
+            "option_c_image_url": q.option_c_image_url,
+            "option_d_image_url": q.option_d_image_url,
         })
 
     elapsed_seconds = (now - attempt.started_at).total_seconds()
@@ -198,6 +203,9 @@ def submit_exam(payload: SubmitExamPayload, db: Session = Depends(get_db)):
         saved_answers = db.query(StudentAnswer).filter(StudentAnswer.attempt_id == attempt.id).all()
         attempted_count = sum(1 for ans in saved_answers if ans.selected_option is not None)
         
+        entrance_perc = attempt.percentage
+        final_perc = round((student.ug_percentage * 0.5) + (entrance_perc * 0.5), 2)
+        
         return {
             "attempt_id": attempt.id,
             "application_number": student.application_number,
@@ -209,6 +217,9 @@ def submit_exam(payload: SubmitExamPayload, db: Session = Depends(get_db)):
             "wrong_answers": attempt.wrong_answers,
             "score": attempt.score,
             "percentage": attempt.percentage,
+            "ug_percentage": student.ug_percentage,
+            "entrance_percentage": entrance_perc,
+            "final_percentage": final_perc,
             "result_visibility": exam.result_visibility
         }
         
@@ -263,6 +274,9 @@ def submit_exam(payload: SubmitExamPayload, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(attempt)
     
+    entrance_perc = attempt.percentage
+    final_perc = round((student.ug_percentage * 0.5) + (entrance_perc * 0.5), 2)
+    
     return {
         "attempt_id": attempt.id,
         "application_number": student.application_number,
@@ -274,5 +288,8 @@ def submit_exam(payload: SubmitExamPayload, db: Session = Depends(get_db)):
         "wrong_answers": attempt.wrong_answers,
         "score": attempt.score,
         "percentage": attempt.percentage,
+        "ug_percentage": student.ug_percentage,
+        "entrance_percentage": entrance_perc,
+        "final_percentage": final_perc,
         "result_visibility": exam.result_visibility
     }
