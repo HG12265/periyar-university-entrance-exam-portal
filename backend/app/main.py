@@ -22,6 +22,7 @@ Base.metadata.create_all(bind=engine)
 def run_migrations():
     db = SessionLocal()
     try:
+        # Questions migrations
         cols_to_add = ["image_url", "option_a_image_url", "option_b_image_url", "option_c_image_url", "option_d_image_url"]
         for col in cols_to_add:
             res = db.execute(text(f"SHOW COLUMNS FROM questions LIKE '{col}'")).fetchone()
@@ -29,6 +30,37 @@ def run_migrations():
                 db.execute(text(f"ALTER TABLE questions ADD COLUMN {col} VARCHAR(500) NULL"))
                 db.commit()
                 print(f"Migration: Column '{col}' added to questions table.")
+
+        # Students migrations
+        for col, col_type in [("course", "VARCHAR(100)"), ("quota", "VARCHAR(100)")]:
+            res = db.execute(text(f"SHOW COLUMNS FROM students LIKE '{col}'")).fetchone()
+            if not res:
+                db.execute(text(f"ALTER TABLE students ADD COLUMN {col} {col_type} NULL"))
+                db.commit()
+                print(f"Migration: Column '{col}' added to students table.")
+
+        # Drop date_of_birth if exists
+        dob_res = db.execute(text("SHOW COLUMNS FROM students LIKE 'date_of_birth'")).fetchone()
+        if dob_res:
+            db.execute(text("ALTER TABLE students DROP COLUMN date_of_birth"))
+            db.commit()
+            print("Migration: Column 'date_of_birth' dropped from students table.")
+
+        # Check and drop unique index on email
+        indices = db.execute(text("SHOW INDEX FROM students")).fetchall()
+        for idx in indices:
+            try:
+                key_name = idx[2]
+                col_name = idx[4]
+                non_unique = idx[1]
+                if col_name == 'email' and non_unique == 0:
+                    db.execute(text(f"ALTER TABLE students DROP INDEX {key_name}"))
+                    db.commit()
+                    print(f"Migration: Dropped unique index {key_name} on email column.")
+            except Exception as index_e:
+                print(f"Index migration detail: {index_e}")
+
+
     except Exception as e:
         print(f"Migration warning: {e}")
     finally:

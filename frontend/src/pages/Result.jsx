@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 const Result = () => {
   const navigate = useNavigate();
   const [result, setResult] = useState(null);
+  const [allDegrees, setAllDegrees] = useState([]);
 
   useEffect(() => {
     const resStr = localStorage.getItem("submit_result");
@@ -11,11 +12,26 @@ const Result = () => {
       navigate("/");
       return;
     }
-    setResult(JSON.parse(resStr));
+    const res = JSON.parse(resStr);
+    setResult(res);
+
+    const sessionListStr = localStorage.getItem("student_session_list");
+    if (sessionListStr) {
+      try {
+        const list = JSON.parse(sessionListStr);
+        const degs = list.flatMap(s => s.degrees || []);
+        setAllDegrees([...new Set(degs)]);
+      } catch (e) {
+        if (res.degrees) setAllDegrees(res.degrees);
+      }
+    } else if (res.degrees) {
+      setAllDegrees(res.degrees);
+    }
   }, [navigate]);
 
   const handleFinish = () => {
     localStorage.removeItem("student_session");
+    localStorage.removeItem("student_session_list");
     localStorage.removeItem("exam_status");
     localStorage.removeItem("attempt_id");
     localStorage.removeItem("submit_result");
@@ -59,9 +75,9 @@ const Result = () => {
             <span style={{ fontWeight: "600", color: "var(--text-muted)" }}>Student Name:</span>
             <span style={{ fontWeight: "600", color: "var(--text-main)" }}>{result.student_name}</span>
 
-            <span style={{ fontWeight: "600", color: "var(--text-muted)" }}>Degree Applied:</span>
+            <span style={{ fontWeight: "600", color: "var(--text-muted)" }}>Degree(s):</span>
             <span style={{ fontWeight: "600", color: "var(--text-main)" }}>
-              {result.degrees ? result.degrees.map(mapDegreeCode).join(", ") : ""}
+              {allDegrees.map(mapDegreeCode).join(", ")}
             </span>
           </div>
         </div>

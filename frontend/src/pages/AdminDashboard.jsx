@@ -48,6 +48,8 @@ const AdminDashboard = () => {
   });
   const [uploadFile, setUploadFile] = useState(null);
   const [uploadResult, setUploadResult] = useState(null);
+  const [studentUploadFile, setStudentUploadFile] = useState(null);
+  const [studentUploadResult, setStudentUploadResult] = useState(null);
   
   // Settings states
   const [examSettings, setExamSettings] = useState({
@@ -255,6 +257,36 @@ const AdminDashboard = () => {
       } else {
         showMessage(`Uploaded ${res.data.added_count} questions, but with some row errors.`, "warning");
         loadQuestions();
+      }
+    } catch (err) {
+      handleApiError(err);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleStudentExcelUpload = async (e) => {
+    e.preventDefault();
+    if (!studentUploadFile) return;
+    setActionLoading(true);
+    setStudentUploadResult(null);
+
+    const formData = new FormData();
+    formData.append("file", studentUploadFile);
+
+    try {
+      const res = await api.post("/api/v1/students/bulk-upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+      setStudentUploadResult(res.data);
+      if (res.data.status === "success") {
+        showMessage(`Successfully imported ${res.data.added_count} students and updated ${res.data.updated_count}.`);
+        loadStudents();
+      } else {
+        showMessage(`Imported ${res.data.added_count} students, but with some row errors.`, "warning");
+        loadStudents();
       }
     } catch (err) {
       handleApiError(err);
@@ -562,14 +594,56 @@ const AdminDashboard = () => {
                   <h1 className="admin-title">Student Management</h1>
                 </div>
 
+                <div className="dashboard-card" style={{ marginBottom: "2rem" }}>
+                  <h3 style={{ fontSize: "1.2rem", fontWeight: "700", marginBottom: "1rem", color: "var(--primary-dark)" }}>
+                    Bulk Import Students (Excel / CSV)
+                  </h3>
+                  <p style={{ fontSize: "0.9rem", color: "var(--text-muted)", marginBottom: "1rem" }}>
+                    Upload an Excel/CSV file matching the columns: 
+                    <strong> Degree | Course | Application No. | Student Name | Community | Quota | E-mail | Mobile No. | Percentage (%)</strong>
+                  </p>
+                  <form onSubmit={handleStudentExcelUpload} style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                    <input
+                      type="file"
+                      accept=".xlsx, .xls, .csv"
+                      onChange={(e) => setStudentUploadFile(e.target.files[0])}
+                      className="form-control"
+                      style={{ flexGrow: "1" }}
+                      required
+                    />
+                    <button type="submit" className="btn btn-secondary" disabled={actionLoading} style={{ width: "180px", display: "flex", gap: "0.5rem" }}>
+                      <Upload size={16} /> Import Students
+                    </button>
+                  </form>
+                  {studentUploadResult && (
+                    <div style={{ marginTop: "1rem", backgroundColor: "#f8fafc", padding: "1rem", borderRadius: "var(--radius-md)" }}>
+                      <p style={{ fontWeight: "600", color: studentUploadResult.status === "success" ? "var(--success)" : "var(--accent)" }}>
+                        Upload Complete: Added {studentUploadResult.added_count} and updated {studentUploadResult.updated_count} students.
+                      </p>
+                      {studentUploadResult.errors.length > 0 && (
+                        <div style={{ marginTop: "0.5rem", maxHeight: "150px", overflowY: "auto" }}>
+                          <p style={{ fontSize: "0.85rem", fontWeight: "600", color: "var(--danger)" }}>Row Errors:</p>
+                          <ul style={{ paddingLeft: "1.25rem", fontSize: "0.8rem", color: "var(--danger)" }}>
+                            {studentUploadResult.errors.map((err, idx) => (
+                              <li key={idx}>{err}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 <div className="table-container">
                   <table className="table">
                     <thead>
                       <tr>
                         <th>Application No</th>
                         <th>Student Name</th>
-                        <th>Degrees Applied</th>
+                        <th>Degree(s) Applied</th>
+                        <th>Course</th>
                         <th>Community</th>
+                        <th>Quota</th>
                         <th>Email</th>
                         <th>Mobile</th>
                         <th style={{ textAlign: "right" }}>UG %</th>
@@ -589,7 +663,9 @@ const AdminDashboard = () => {
                               )) : ""}
                             </div>
                           </td>
+                          <td>{student.course || "-"}</td>
                           <td>{student.community}</td>
+                          <td>{student.quota || "-"}</td>
                           <td>{student.email}</td>
                           <td>{student.mobile}</td>
                           <td style={{ textAlign: "right", fontWeight: "600" }}>{student.ug_percentage}%</td>
@@ -597,7 +673,7 @@ const AdminDashboard = () => {
                       ))}
                       {students.length === 0 && (
                         <tr>
-                          <td colSpan="7" style={{ textAlign: "center", color: "var(--text-muted)" }}>
+                          <td colSpan="9" style={{ textAlign: "center", color: "var(--text-muted)" }}>
                             No student records found.
                           </td>
                         </tr>

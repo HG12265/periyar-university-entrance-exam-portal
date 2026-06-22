@@ -24,6 +24,11 @@ class AdminResponse(AdminBase):
         from_attributes = True
 
 # Student Schemas
+class StudentLogin(BaseModel):
+    application_mca: Optional[str] = None
+    application_cs: Optional[str] = None
+    application_ds: Optional[str] = None
+
 class StudentBase(BaseModel):
     application_number: str
     name: str
@@ -31,7 +36,8 @@ class StudentBase(BaseModel):
     email: EmailStr
     mobile: str
     ug_percentage: float = Field(..., ge=0, le=100)
-    date_of_birth: date
+    course: Optional[str] = None
+    quota: Optional[str] = None
 
 class StudentCreate(StudentBase):
     degrees: List[str]  # e.g., ["MCA", "MSC_CS"]
