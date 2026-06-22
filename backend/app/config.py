@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "Periyar University Entrance Examination Portal API"
     ENVIRONMENT: str = "development"  # Options: development, production
     API_V1_PREFIX: str = "/api/v1"
+    SHOW_DOCS: bool = False
     
     # CORS Configuration
     BACKEND_CORS_ORIGINS: Union[str, List[str]] = ["*"]

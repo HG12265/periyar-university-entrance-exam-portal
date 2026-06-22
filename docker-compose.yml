@@ -29,6 +29,7 @@ services:
         condition: service_healthy
     environment:
       ENVIRONMENT: development
+      SHOW_DOCS: "false"
       DATABASE_HOST: db
       DATABASE_PORT: 3306
       DATABASE_NAME: ${MYSQL_DATABASE}

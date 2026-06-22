@@ -61,7 +61,10 @@ seed_admin()
 app = FastAPI(
     title=settings.APP_NAME,
     description="Backend services for student registration, exam taking, evaluation, leaderboard, and admin dashboard.",
-    version="1.0.0"
+    version="1.0.0",
+    docs_url="/docs" if settings.SHOW_DOCS else None,
+    redoc_url="/redoc" if settings.SHOW_DOCS else None,
+    openapi_url="/openapi.json" if settings.SHOW_DOCS else None,
 )
 
 app.state.limiter = limiter
@@ -91,7 +94,9 @@ app.mount("/api/v1/static", StaticFiles(directory=static_dir), name="static")
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to Periyar University Entrance Examination Portal API. Refer to /docs for API documentation."}
+    if settings.SHOW_DOCS:
+        return {"message": "Welcome to Periyar University Entrance Examination Portal API. Refer to /docs for API documentation."}
+    return {"message": "Welcome to Periyar University Entrance Examination Portal API."}
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
