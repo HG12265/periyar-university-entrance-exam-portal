@@ -18,11 +18,10 @@ class Student(Base):
     application_number = Column(String(50), unique=True, index=True, nullable=False)
     name = Column(String(150), nullable=False)
     community = Column(String(100), nullable=False)
-    email = Column(String(150), unique=False, nullable=False)
+    email = Column(String(150), unique=True, nullable=False)
     mobile = Column(String(20), nullable=False)
     ug_percentage = Column(Float, nullable=False)
-    course = Column(String(100), nullable=True)
-    quota = Column(String(100), nullable=True)
+    date_of_birth = Column(Date, nullable=False)
     registered_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     # Relationships
